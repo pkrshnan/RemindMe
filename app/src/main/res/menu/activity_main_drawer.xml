@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_general"
+        android:icon="@drawable/ic_nav_general"
+        android:title="General" />
+
+    <item android:title="Labels">
+        <menu>
+            <item
+                android:id="@+id/nav_shopping"
+                android:icon="@drawable/ic_nav_shopping"
+                android:title="Shopping" />
+            <item
+                android:id="@+id/nav_grocery"
+                android:icon="@drawable/ic_nav_grocery"
+                android:title="Grocery" />
+            <item
+                android:id="@+id/nav_tasks"
+                android:icon="@drawable/ic_nav_tasks"
+                android:title="Tasks" />
+        </menu>
+    </item>
+
+    <group android:id="@+id/nav_info">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_nav_settings"
+            android:title="Settings" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_nav_help"
+            android:title="Help and Feedback" />
+    </group>
+
+</menu>

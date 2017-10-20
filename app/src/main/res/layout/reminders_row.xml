@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_click"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:clickable="true"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/row_title"
+        android:textColor="@android:color/black"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/row_location_image"
+        android:layout_width="15dp"
+        android:layout_marginTop="2dp"
+        android:layout_height="15dp"
+        android:tint="#5b5b5b"
+        android:src="@drawable/ic_row_location"
+        android:layout_below="@id/row_title"/>
+
+    <TextView
+        android:id="@+id/row_location"
+        android:textColor="#5b5b5b"
+        android:layout_below="@id/row_title"
+        android:layout_marginStart="10dp"
+        android:layout_alignBaseline="@id/row_location_image"
+        android:layout_toEndOf="@id/row_location_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/row_tag_image"
+        android:scaleX="-1"
+        android:layout_width="15dp"
+        android:layout_marginTop="2dp"
+        android:layout_height="15dp"
+        android:tint="#5b5b5b"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_row_tag"
+        android:layout_below="@id/row_title"/>
+    <TextView
+        android:id="@+id/row_tag"
+        android:textColor="#5b5b5b"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@id/row_tag_image"
+        android:layout_alignBaseline="@id/row_location"
+        android:layout_height="wrap_content" />
+
+
+
+</RelativeLayout>
