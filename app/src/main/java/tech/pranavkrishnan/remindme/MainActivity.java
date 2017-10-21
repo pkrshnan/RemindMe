@@ -31,6 +31,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+
     public static List<Reminder> reminderList;
     private TextView title;
     private Reminder newReminder;
@@ -60,9 +61,17 @@ public class MainActivity extends AppCompatActivity
         // Typeface
         setTitle("");
         title = (TextView) findViewById(R.id.main_activity_title);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Quicksand-Bold.otf");
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        TextView navHeaderName = navigationView.getHeaderView(0).findViewById(R.id.nav_header_name);
+        TextView navHeaderEmail = navigationView.getHeaderView(0).findViewById(R.id.nav_header_email);
 
-        title.setTypeface(custom_font);
+        Typeface boldFont = Typeface.createFromAsset(getAssets(),  "fonts/Quicksand-Bold.otf");
+        Typeface normalFont = Typeface.createFromAsset(getAssets(),  "fonts/Quicksand-Regular.otf");
+
+
+        title.setTypeface(boldFont);
+        navHeaderName.setTypeface(boldFont);
+        navHeaderEmail.setTypeface(normalFont);
 
         if (getIntent() != null) {
             if (getIntent().getStringExtra("Activity") != null) {
@@ -97,7 +106,6 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         // Selecting items in drawer
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
     }
@@ -211,11 +219,15 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (!MainActivity.reminderList.isEmpty() && !MainActivity.reminderList.contains(newReminder) && newReminder != null) {
             if (!newReminder.getTitle().equals("") && !newReminder.getAddress().equals("")) {
-                MainActivity.reminderList.add(newReminder);
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_container, GeneralFragment.newInstance("General")).commit();
+                for (Reminder i : MainActivity.reminderList) {
+                    if (!i.getTitle().equals(newReminder.getTitle()) && !i.getAddress().equals(newReminder.getAddress())) {
+                        MainActivity.reminderList.add(newReminder);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, GeneralFragment.newInstance("General")).commit();
+                    }
+                }
 
             }
-        } else if (MainActivity.reminderList.isEmpty() && !MainActivity.reminderList.contains(newReminder) && newReminder != null) {
+        } else if (MainActivity.reminderList.isEmpty() && newReminder != null) {
             MainActivity.reminderList.add(newReminder);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_container, GeneralFragment.newInstance("General")).commit();
         }
