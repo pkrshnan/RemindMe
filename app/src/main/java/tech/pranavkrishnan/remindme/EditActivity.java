@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.vision.text.Line;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +34,8 @@ import java.util.List;
 public class EditActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private Reminder editReminder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,10 +48,14 @@ public class EditActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        // Get Intent
+        editReminder = getIntent().getParcelableExtra("Reminder");
 
         final TextView title = (TextView) findViewById(R.id.edit_activity_title);
+        final TextView delete = (TextView) findViewById(R.id.delete_text);
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Quicksand-Bold.otf");
         title.setTypeface(custom_font);
+        delete.setTypeface(custom_font);
 
         // Obtain MapFragment and notify when map ready
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -55,21 +65,23 @@ public class EditActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        title.setText(getIntent().getStringExtra("Title"));
-
         // Get Textviews
         final TextView addressText = findViewById(R.id.edit_address);
         final TextView tagText = findViewById(R.id.edit_tag);
         final TextView priorityText = findViewById(R.id.edit_priority);
         TextView repeatText = findViewById(R.id.edit_repeat);
 
+        // Get Intent
+        editReminder = getIntent().getParcelableExtra("Reminder");
+
         // Set Values
-        addressText.setText(getIntent().getStringExtra("Address"));
-        tagText.setText(getIntent().getStringExtra("Tag"));
-        priorityText.setText(getIntent().getStringExtra("Priority"));
+        title.setText(editReminder.getTitle());
+        addressText.setText(editReminder.getAddress());
+        tagText.setText(editReminder.getCategory());
+        priorityText.setText(editReminder.getPriority());
 
         // Set Repeat Value
-        boolean[] repeat = getIntent().getBooleanArrayExtra("Repeat");
+        final boolean[] repeat = editReminder.getRepeat();
         String concatenated = "";
         for (int i= 0; i < repeat.length; i++) {
             if (repeat[i]) {
@@ -85,6 +97,18 @@ public class EditActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         repeatText.setText(concatenated);
 
+        // Set Delete Button
+        LinearLayout deleteButton = findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("Activity", "EditActivity");
+                intent.putExtra("Remove", editReminder.getTitle());
+                startActivity(intent);
+            }
+        });
+
         // Handle button click
         ImageView editButton = findViewById(R.id.button_edit);
         editButton.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +116,7 @@ public class EditActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), CreationActivity.class);
                 intent.putExtra("Activity", "EditActivity");
-                intent.putExtra("Reminder", new Reminder(title.getText().toString(), addressText.getText().toString(), tagText.getText().toString(), priorityText.getText().toString()));
+                intent.putExtra("Reminder", (Parcelable) new Reminder(title.getText().toString(), addressText.getText().toString(), tagText.getText().toString(), priorityText.getText().toString(), repeat));
                 startActivity(intent);
             }
         });

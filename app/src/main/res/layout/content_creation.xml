@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="80dp"
+    android:background="#FFFFFF"
+    android:layout_marginTop="56dp"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="tech.pranavkrishnan.remindme.EditActivity"
-    tools:showIn="@layout/activity_creation">
+    tools:context="tech.pranavkrishnan.remindme.CreationActivity">
+
     <LinearLayout
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_width="match_parent">
+        android:layout_height="match_parent">
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -18,17 +19,17 @@
             android:layout_weight="50"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             tools:context="tech.pranavkrishnan.remindme.CreationActivity" />
 
         <ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_weight="50"
-            android:layout_height="match_parent">
+            android:layout_height="0dp">
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <RelativeLayout
                     android:layout_marginLeft="15dp"
@@ -198,4 +199,4 @@
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>

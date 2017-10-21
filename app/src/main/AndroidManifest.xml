@@ -43,6 +43,7 @@
 
         <activity
             android:name=".CreationActivity"
+            android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="">

@@ -1,165 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="tech.pranavkrishnan.remindme.EditActivity"
     tools:showIn="@layout/activity_edit">
 
     <LinearLayout
+        android:id="@+id/delete_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/gradient"
+        android:layout_alignParentBottom="true">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/delete_text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:text="Delete Reminder"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:textAllCaps="true" />
+    </LinearLayout>
+
+    <LinearLayout
         android:orientation="vertical"
-        android:layout_marginBottom="15dp"
+        android:layout_above="@id/delete_button"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <!-- TODO: Get a proper drawable -->
-
-            <ImageView
-                android:src="@drawable/ic_location_outline"
-                android:layout_width="75dp"
-                android:padding="25dp"
-                android:background="#f1f1f1"
-                android:tint="#3b3b3b"
-                android:layout_height="75dp" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginTop="15dp"
-                android:layout_marginStart="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:text="Address"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp" />
-                <TextView
-                    android:id="@+id/edit_address"
-                    android:textStyle="bold"
-                    android:layout_width="match_parent"
-                    android:textColor="#3b3b3b"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:src="@drawable/ic_tag"
-                android:layout_width="75dp"
-                android:padding="25dp"
-                android:background="#f1f1f1"
-                android:tint="#3b3b3b"
-                android:layout_height="75dp" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginTop="15dp"
-                android:layout_marginStart="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:text="Tag"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp" />
-                <TextView
-                    android:id="@+id/edit_tag"
-                    android:textStyle="bold"
-                    android:textColor="#3b3b3b"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:textSize="20sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:src="@drawable/ic_priority"
-                android:layout_width="75dp"
-                android:padding="23dp"
-                android:background="#f1f1f1"
-                android:tint="#3b3b3b"
-                android:layout_height="75dp" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginTop="15dp"
-                android:layout_marginStart="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:text="Priority"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp" />
-                <TextView
-                    android:id="@+id/edit_priority"
-                    android:textStyle="bold"
-                    android:textColor="#3b3b3b"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:textSize="20sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:src="@drawable/ic_repeat"
-                android:layout_width="75dp"
-                android:padding="25dp"
-                android:background="#f1f1f1"
-                android:tint="#3b3b3b"
-                android:layout_height="75dp" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginTop="15dp"
-                android:layout_marginStart="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:text="Repeat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp" />
-                <TextView
-                    android:id="@+id/edit_repeat"
-                    android:textStyle="bold"
-                    android:textColor="#3b3b3b"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-
-        </LinearLayout>
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -167,10 +40,166 @@
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="250dip"
             tools:context="tech.pranavkrishnan.remindme.EditActivity" />
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <!-- TODO: Get a proper drawable -->
+
+                    <ImageView
+                        android:src="@drawable/ic_location_outline"
+                        android:layout_width="75dp"
+                        android:padding="25dp"
+                        android:background="#f1f1f1"
+                        android:tint="#3b3b3b"
+                        android:layout_height="75dp" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:text="Address"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/edit_address"
+                            android:textStyle="bold"
+                            android:layout_width="match_parent"
+                            android:textColor="#3b3b3b"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:src="@drawable/ic_tag"
+                        android:layout_width="75dp"
+                        android:padding="25dp"
+                        android:background="#f1f1f1"
+                        android:tint="#3b3b3b"
+                        android:layout_height="75dp" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:text="Tag"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/edit_tag"
+                            android:textStyle="bold"
+                            android:textColor="#3b3b3b"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:src="@drawable/ic_priority"
+                        android:layout_width="75dp"
+                        android:padding="23dp"
+                        android:background="#f1f1f1"
+                        android:tint="#3b3b3b"
+                        android:layout_height="75dp" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:text="Priority"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/edit_priority"
+                            android:textStyle="bold"
+                            android:textColor="#3b3b3b"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:src="@drawable/ic_repeat"
+                        android:layout_width="75dp"
+                        android:padding="25dp"
+                        android:background="#f1f1f1"
+                        android:tint="#3b3b3b"
+                        android:layout_height="75dp" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:text="Repeat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/edit_repeat"
+                            android:textStyle="bold"
+                            android:textColor="#3b3b3b"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
-</FrameLayout>
+
+</RelativeLayout>
 

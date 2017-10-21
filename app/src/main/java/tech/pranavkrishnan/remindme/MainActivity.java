@@ -65,9 +65,20 @@ public class MainActivity extends AppCompatActivity
         title.setTypeface(custom_font);
 
         if (getIntent() != null) {
-            //
+            if (getIntent().getStringExtra("Activity") != null) {
+                if (getIntent().getStringExtra("Activity").equals("CreationActivity")) {
+                    newReminder = getIntent().getParcelableExtra("Reminder");
+                } else if(getIntent().getStringExtra("Activity").equals("EditActivity")) {
+                    String removeName = getIntent().getStringExtra("Remove");
+                    for (Reminder i: MainActivity.reminderList) {
+                        if (i.getTitle().equals(removeName)) {
+                            MainActivity.reminderList.remove(i);
+                        }
+                    }
+                }
+            }
         }
-        // Create button for creating reminder
+                // Create button for creating reminder
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,14 +209,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        if (!MainActivity.reminderList.isEmpty() && !MainActivity.reminderList.contains(CreationActivity.newReminder) && CreationActivity.newReminder != null) {
-            if (!CreationActivity.newReminder.getTitle().equals("") && !CreationActivity.newReminder.getAddress().equals("")) {
-                MainActivity.reminderList.add(CreationActivity.newReminder);
+        if (!MainActivity.reminderList.isEmpty() && !MainActivity.reminderList.contains(newReminder) && newReminder != null) {
+            if (!newReminder.getTitle().equals("") && !newReminder.getAddress().equals("")) {
+                MainActivity.reminderList.add(newReminder);
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_container, GeneralFragment.newInstance("General")).commit();
 
             }
-        } else if (MainActivity.reminderList.isEmpty() && !MainActivity.reminderList.contains(CreationActivity.newReminder) && CreationActivity.newReminder != null) {
-            MainActivity.reminderList.add(CreationActivity.newReminder);
+        } else if (MainActivity.reminderList.isEmpty() && !MainActivity.reminderList.contains(newReminder) && newReminder != null) {
+            MainActivity.reminderList.add(newReminder);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_container, GeneralFragment.newInstance("General")).commit();
         }
 

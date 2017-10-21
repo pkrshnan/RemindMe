@@ -4,9 +4,11 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -66,9 +68,13 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
         super.onCreate(savedInstanceState);
 
         //Set Gradient
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        Window window = this.getWindow();
+        Drawable background = this.getResources().getDrawable(R.drawable.gradient);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
+        window.setNavigationBarColor(getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
+
 
         setContentView(R.layout.activity_creation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -297,9 +303,10 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
                     newReminder.setTitle(nameTextValue);
                     newReminder.setCategory(tagSpinner.getSelectedItem().toString());
                     newReminder.setPriority(prioritySpinner.getSelectedItem().toString());
-                    newReminder.setRepeat(repeat.isChecked(), sunday.isChecked(), monday.isChecked(), tuesday.isChecked(), wednesday.isChecked(), thursday.isChecked(),
+                    newReminder.setRepeat(sunday.isChecked(), monday.isChecked(), tuesday.isChecked(), wednesday.isChecked(), thursday.isChecked(),
                             friday.isChecked(), saturday.isChecked());
-                    intent.putExtra("Reminder", newReminder);
+                    intent.putExtra("Activity", "CreationActivity");
+                    intent.putExtra("Reminder", (Parcelable) newReminder);
                     startActivity(intent);
 
                 } else if (nameTextValue.equals("")) {

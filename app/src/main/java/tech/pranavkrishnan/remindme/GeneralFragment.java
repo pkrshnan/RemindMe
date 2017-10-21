@@ -80,7 +80,7 @@ public class GeneralFragment extends Fragment {
             }
         }
 
-        mAdapter = new RemindersAdapter(getActivity(), reminderList);
+        mAdapter = new RemindersAdapter(reminderList);
         if (recyclerView != null) {
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
             recyclerView.setLayoutManager(mLayoutManager);

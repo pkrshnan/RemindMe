@@ -5,6 +5,7 @@ package tech.pranavkrishnan.remindme;
  */
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,6 @@ import java.util.List;
 
 public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.MyViewHolder> {
     private List<Reminder> remindersList;
-    private Context context;
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, location, tag;
 
@@ -33,11 +32,8 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.MyVi
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(v.getContext(), EditActivity.class);
-                    intent.putExtra("Title", remindersList.get(getAdapterPosition()).getTitle());
-                    intent.putExtra("Address", remindersList.get(getAdapterPosition()).getAddress());
-                    intent.putExtra("Tag", remindersList.get(getAdapterPosition()).getCategory());
-                    intent.putExtra("Priority", remindersList.get(getAdapterPosition()).getPriority());
-                    intent.putExtra("Repeat", remindersList.get(getAdapterPosition()).getRepeat());
+                    Reminder edit = remindersList.get(getAdapterPosition());
+                    intent.putExtra("Reminder", (Parcelable) new Reminder(edit.getTitle(), edit.getAddress(), edit.getCategory(), edit.getPriority(), edit.getRepeat()));
                     v.getContext().startActivity(intent);
                 }
             });
@@ -46,9 +42,8 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.MyVi
     }
 
 
-    public RemindersAdapter(Context context, List<Reminder> remindersList) {
+    public RemindersAdapter(List<Reminder> remindersList) {
         this.remindersList = remindersList;
-        this.context = context;
     }
 
     @Override

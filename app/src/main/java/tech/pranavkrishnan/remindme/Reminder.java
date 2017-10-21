@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Created by Pranav Krishnan on 10/11/2017.
  */
 
-public class Reminder implements Parcelable {
+public class Reminder implements Parcelable, Serializable {
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Reminder createFromParcel(Parcel in) {
@@ -22,7 +22,7 @@ public class Reminder implements Parcelable {
     };
 
     private String title, address, category, priority;
-    private boolean[] repeat;
+    private boolean[] repeat = new boolean[7];
 
 
     public Reminder() {
@@ -72,7 +72,7 @@ public class Reminder implements Parcelable {
         this.priority = priority;
     }
 
-    public void setRepeat(boolean repeat, boolean sunday, boolean monday, boolean tuesday, boolean wednesday, boolean thursday, boolean friday, boolean saturday) {
+    public void setRepeat(boolean sunday, boolean monday, boolean tuesday, boolean wednesday, boolean thursday, boolean friday, boolean saturday) {
         this.repeat = new boolean[] {sunday, monday, tuesday, wednesday, thursday, friday, saturday};
     }
 
