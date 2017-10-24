@@ -171,11 +171,11 @@
                         android:padding="25dp"
                         android:background="#f1f1f1"
                         android:tint="#3b3b3b"
-                        android:layout_height="75dp" />
+                        android:layout_height="85dp" />
 
                     <LinearLayout
                         android:orientation="vertical"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="14dp"
                         android:layout_marginStart="20dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">

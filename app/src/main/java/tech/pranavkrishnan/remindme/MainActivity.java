@@ -219,11 +219,15 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (!MainActivity.reminderList.isEmpty() && !MainActivity.reminderList.contains(newReminder) && newReminder != null) {
             if (!newReminder.getTitle().equals("") && !newReminder.getAddress().equals("")) {
+                boolean exists = false;
                 for (Reminder i : MainActivity.reminderList) {
-                    if (!i.getTitle().equals(newReminder.getTitle()) && !i.getAddress().equals(newReminder.getAddress())) {
-                        MainActivity.reminderList.add(newReminder);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, GeneralFragment.newInstance("General")).commit();
+                    if (i.getTitle().equals(newReminder.getTitle()) && i.getAddress().equals(newReminder.getAddress())) {
+                        exists = true;
                     }
+                }
+                if (!exists) {
+                    MainActivity.reminderList.add(newReminder);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_container, GeneralFragment.newInstance("General")).commit();
                 }
 
             }
