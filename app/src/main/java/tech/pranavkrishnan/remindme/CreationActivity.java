@@ -1,6 +1,8 @@
 package tech.pranavkrishnan.remindme;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -8,6 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
@@ -39,9 +44,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -53,12 +60,15 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
 
     private GoogleMap mMap;
     private Location currentLocation;
+    private Activity activity;
+
     private Reminder newReminder;
+
     private FusedLocationProviderClient mFusedLocationClient;
-    private String originActivity;
-    private Reminder editReminder;
     private double homeLatitude = 43.610918;
     private double homeLongitude = -79.657034;
+    private Marker currentLocationMarker;
+    private Circle currentLocationCircle;
 
     private EditText addressText;
     private EditText nameText;
@@ -66,7 +76,7 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        activity = this;
         //Set Gradient
         Window window = this.getWindow();
         Drawable background = this.getResources().getDrawable(R.drawable.gradient);
@@ -168,11 +178,11 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
                             }
 
                             LatLngBounds bounds = new LatLngBounds(new LatLng(smallestLat, smallestLong), new LatLng(largestLat, largestLong));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
-                        } else {
-                            Toast.makeText(getApplicationContext(), "We're having trouble finding that address. Perhaps be more specific?", Toast.LENGTH_LONG).show();
-                        }
-                    }
+                                  mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+                } else {
+                    Toast.makeText(getApplicationContext(), "We're having trouble finding that address. Perhaps be more specific?", Toast.LENGTH_LONG).show();
+                }
+            }
 
                     return true;
                 }
@@ -297,9 +307,7 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
                 CheckBox sunday = findViewById(R.id.checkbox_sunday);
 
                 // Make sure name and address aren't empty, then set all data and start main activity
-                if (!addressTextValue.equals("") && !nameText.getText().toString().equals("")) {
-                    // TODO: Implement Parcelable instead of static variable
-                    newReminder.setAddress(addressTextValue);
+                if (!addressTextValue.equals("") && !nameText.getText().toString().equals("")) {newReminder.setAddress(addressTextValue);
                     newReminder.setTitle(nameTextValue);
                     newReminder.setCategory(tagSpinner.getSelectedItem().toString());
                     newReminder.setPriority(prioritySpinner.getSelectedItem().toString());
@@ -319,26 +327,33 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     private void getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             Log.d("Location", "Failure");
             return;
         }
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            moveCamera(location, true);
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "RemindMe needs location - please turn it on!", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            startActivityForResult(intent, 1);
-                        }
-                    }
-                });
+
+        final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20, 100, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                moveCamera(location, true);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 1);
+                Toast.makeText(activity, "Remind Me! needs the location permission to function.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -364,20 +379,25 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15f));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
         if (userLocation) {
-            mMap.addMarker(new MarkerOptions().position(latlng).alpha(0.8f).title("Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-            mMap.addCircle(new CircleOptions().center(latlng).radius(location.getAccuracy()).fillColor(0x9091bbff).strokeWidth(0));
+            currentLocationMarker.setPosition(latlng);
+            currentLocationCircle.setCenter(latlng);
+            currentLocationCircle.setRadius(location.getAccuracy());
         } else {
-            mMap.addMarker(new MarkerOptions().position(latlng).alpha(0.8f).title("Current Location"));
+            currentLocationMarker.setPosition(latlng);
         }
 
         if (location.getAccuracy() > 1000) {
-            Toast.makeText(getApplicationContext(), "Sorry about the uncertainty, having trouble retrieving your location", Toast.LENGTH_LONG);
+            Toast.makeText(getApplicationContext(), "Sorry about the uncertainty, having trouble retrieving your location", Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        MarkerOptions currentLocationOptions = new MarkerOptions().position(new LatLng(50000, 50000)).alpha(0.8f).title("Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        CircleOptions circleOptions = new CircleOptions().center(new LatLng(50000, 50000)).radius(10).fillColor(0x9091bbff).strokeWidth(0);
+        currentLocationCircle = mMap.addCircle(circleOptions);
+        currentLocationMarker = mMap.addMarker(currentLocationOptions);
     }
 
     private List<Address> getLocation(final String strAddress) {
@@ -417,9 +437,7 @@ public class CreationActivity extends AppCompatActivity implements OnMapReadyCal
             Log.d("LatDifference", Double.toString(Math.abs(homeLatitude-latitude)));
             Log.d("LongDifference", Double.toString(Math.abs(homeLongitude-longitude)));
             if (Math.abs(homeLatitude-latitude) <= 0.2 && Math.abs(homeLongitude-longitude) <= 0.2) {
-                
                 returnAdd.add(address.get(i));
-                Log.d("Works", "Yes");
             }
         }
         return returnAdd;

@@ -108,6 +108,10 @@ public class MainActivity extends AppCompatActivity
         // Selecting items in drawer
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Start Service
+        Intent locationIntent = new Intent(this, LocationService.class);
+        startService(locationIntent);
+
     }
 
     @Override
