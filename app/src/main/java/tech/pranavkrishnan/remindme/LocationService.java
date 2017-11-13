@@ -7,7 +7,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,35 +19,42 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: Apply FusedLocationProvider instead of LocationManager.
 public class LocationService extends Service {
 
     NotificationManager mNotificationManager;
     LocationManager locationManager;
     LocationListener locationListener;
     Notification notification;
+    String remindersGroup = "Reminders";
+    int notificationCount = 2;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Reminder reminder = checkLocation(location);
+                List<Reminder> checkedList = checkLocation(location);
 
-                if (reminder != null) {
-                    createNotification(reminder);
+                if (!checkedList.isEmpty()) {
+                    for (Reminder reminder: checkedList) {
+                        createNotification(reminder);
+                    }
                 }
             }
 
@@ -68,7 +74,7 @@ public class LocationService extends Service {
         };
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 900, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 900000, 100, locationListener);
         }
     }
 
@@ -77,11 +83,11 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startid) {
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = "main_channel";
+        String channelId = "running_channel";
 
         // Name, Description and Importance of Channel
-        CharSequence name = getString(R.string.channel_name);
-        String description = getString(R.string.channel_description);
+        CharSequence name = "Service Running";
+        String description = "Channel that contains persistent notification of status of background service.";
         int importance = NotificationManager.IMPORTANCE_MIN;
 
         NotificationChannel mChannel = new NotificationChannel(channelId, name, importance);
@@ -94,11 +100,12 @@ public class LocationService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification mNotification =  new Notification.Builder(this, channelId)
 
-                .setSmallIcon(R.drawable.ic_nav_general)
+                .setSmallIcon(R.drawable.ic_location_outline)
                 .setTicker("RemindMe Is Running")
                 .setContentTitle("Currently Active")
                 .setContentIntent(pendingIntent)
-                .setContentText("The reminders service is actively running - please leave location on! We only request a location every 15 minutes.")
+                .setGroup("Active")
+                .setContentText("The reminders service is actively running - please leave location on!")
                 .build();
         startForeground(1, mNotification);
         return START_STICKY;
@@ -111,19 +118,22 @@ public class LocationService extends Service {
         return null;
     }
 
-    private Reminder checkLocation(Location location) {
-        for (Reminder reminder : MainActivity.reminderList) {
+    private List<Reminder> checkLocation(Location location) {
+        List<Reminder> reminderList = deserializeData();
+        List<Reminder> checkedList = new ArrayList<Reminder>();
+
+        for (Reminder reminder : reminderList) {
             Address address = getLocation(reminder.getAddress());
            Location reminderLoc = new Location("");
            reminderLoc.setLatitude(address.getLatitude());
            reminderLoc.setLongitude(address.getLongitude());
 
-            if (location.distanceTo(reminderLoc) < 2000) {
-                return reminder;
+            if (location.distanceTo(reminderLoc) <= 500) {
+                checkedList.add(reminder);
             }
         }
 
-        return null;
+        return checkedList;
     }
 
 
@@ -144,32 +154,43 @@ public class LocationService extends Service {
             mChannel.setLightColor(Color.BLUE);
             mNotificationManager.createNotificationChannel(mChannel);
 
+            if (notificationCount >= 3) {
+                NotificationCompat.Builder summaryNotification = new NotificationCompat.Builder(this)
+                        .setGroupSummary(true)
+                        .setContentTitle("Reminders")
+                        .setSmallIcon(R.drawable.ic_nav_general)
+                        .setChannelId(channelId)
+                        .setGroup(remindersGroup);
+
+                mNotificationManager.notify(0, summaryNotification.build());
+            }
+
             mBuilder = new NotificationCompat.Builder(this, channelId)
                     .setSmallIcon(R.drawable.ic_nav_general)
                     .setContentTitle(reminder.getTitle())
-                    .setOngoing(true)
-                    .setContentText("You're near " + reminder.getAddress() + " , make sure to complete your tasks!");
+                    .setAutoCancel(true)
+                    .setGroup(remindersGroup)
+                    .setContentText("You're near " + reminder.getAddress() + ", make sure to complete your task!");
         } else {
             mBuilder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.ic_nav_general)
                     .setContentTitle(reminder.getTitle())
-                    .setOngoing(true)
-                    .setContentText("You're near " + reminder.getAddress() + " , make sure to complete your tasks!");
+                    .setGroup(remindersGroup)
+                    .setAutoCancel(true)
+                    .setContentText("You're near " + reminder.getAddress() + ", make sure to complete your task!");
         }
 
 
         Intent editIntent =  new Intent(this, EditActivity.class);
+        editIntent.setAction("Hello");
+        editIntent.putExtra("Reminder",  (Parcelable) new Reminder(reminder.getTitle(), reminder.getAddress(), reminder.getCategory(), reminder.getPriority(), reminder.getRepeat()));
 
-        // Create Artificial BackStack
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(EditActivity.class);
-        stackBuilder.addNextIntent(editIntent);
-
-        PendingIntent editPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent editPendingIntent = PendingIntent.getActivity(this, notificationCount, editIntent, PendingIntent.FLAG_ONE_SHOT);
         mBuilder.setContentIntent(editPendingIntent);
 
         notification = mBuilder.build();
-        mNotificationManager.notify(1, notification);
+        mNotificationManager.notify(notificationCount, notification);
+        notificationCount += 1;
     }
     private Address getLocation(final String strAddress) {
         final Geocoder coder = new Geocoder(this);
@@ -200,6 +221,21 @@ public class LocationService extends Service {
         }
 
         return address.get(0);
+    }
+
+    public List<Reminder> deserializeData() {
+        try {
+            FileInputStream fileInputStream = new FileInputStream(getFilesDir() + "data.ser");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            List<Reminder> reminderList = (List<Reminder>) objectInputStream.readObject();
+            objectInputStream.close();
+            fileInputStream.close();
+
+            return reminderList;
+        } catch (Exception e) {
+            Log.e("Deserialize", e.toString());
+        }
+        return null;
     }
 
     @Override
